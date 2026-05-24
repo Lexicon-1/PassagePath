@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#0f766e">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-title" content="PassagePath">
+    <title>PassagePath</title>
+    <link rel="manifest" href="manifest.webmanifest">
+    <link rel="icon" href="assets/icons/icon-192.png">
+    <link rel="apple-touch-icon" href="assets/icons/icon-192.png">
+    <link rel="stylesheet" href="styles.css?v=rare1">
+  </head>
+  <body>
+    <div class="app-shell">
+      <header class="topbar">
+        <div class="brand-lockup">
+          <img class="brand-mark" src="assets/icons/icon-192.png" alt="" aria-hidden="true">
+          <div>
+            <p class="eyebrow">Reading Assessment Studio</p>
+            <h1>PassagePath</h1>
+          </div>
+        </div>
+        <div class="top-actions">
+          <button class="icon-button" id="stopAudioBtn" type="button" title="Stop reading" aria-label="Stop reading">
+            <span class="stop-glyph" aria-hidden="true"></span>
+          </button>
+          <button class="text-button" id="resetBtn" type="button">Reset Progress</button>
+        </div>
+      </header>
+
+      <main id="appRoot"></main>
+    </div>
+
+    <script src="data/content.js?v=passagepath"></script>
+    <script src="data/selections.js?v=rare1"></script>
+    <script src="app.js?v=rare1"></script>
+    <script>
+      if ("serviceWorker" in navigator) {
+        navigator.serviceWorker.register("sw.js").catch(() => {});
+      }
+    </script>
+  </body>
+</html>
