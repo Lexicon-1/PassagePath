@@ -6,6 +6,9 @@ Current prototype content:
 
 - Grade 4, Unit 1, Week 1: Reaching for the Moon
 - Grade 4, Unit 1, Week 2: Rare Treasure: Mary Anning and Her Remarkable Discoveries
+- Grade 4, Unit 1, Week 3: Twins in Space
+- Grade 4, Unit 1, Week 4: Life at the Top
+- Grade 4, Unit 1, Week 5: Barbed Wire Baseball
 - Grade 3 Reading Skill sample: Author's Purpose
 
 This GitHub Pages package is a static web app. It can be published from the repository root using GitHub Pages.
@@ -19,7 +22,6 @@ This GitHub Pages package is a static web app. It can be published from the repo
 5. Select branch `main` and folder `/root`.
 6. Save.
 
-The site will normally publish at:
+For the current `Lexicon-1/PassagePath` repository, the site will normally publish at:
 
-`https://<your-github-username>.github.io/passagepath/`
-
+`https://lexicon-1.github.io/PassagePath/`
