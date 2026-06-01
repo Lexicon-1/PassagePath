@@ -53,7 +53,10 @@
   function patchContentSettings() {
     Object.keys(window)
       .filter((key) => /content|passage|grade|reading/i.test(key))
-      .forEach((key) => patchAvailabilityObject(window[key], 0));
+      .forEach((key) => {
+        addGradeFiveContentOption(window[key], 0);
+        patchAvailabilityObject(window[key], 0);
+      });
   }
 
   function replaceLockedWords(root) {
@@ -92,6 +95,84 @@
       .replace(/\bgrade[-_\s]*4\b/gi, "grade5")
       .replace(/\bg[-_\s]*4\b/gi, "g5")
       .replace(/\bfour\b/gi, "five");
+  }
+
+  function cloneForGradeFive(value) {
+    if (Array.isArray(value)) return value.map(cloneForGradeFive);
+    if (!value || typeof value !== "object") return gradeFiveValue(value);
+
+    const clone = {};
+    Object.keys(value).forEach((key) => {
+      if (["selections", "questions", "assessment_levels", "standardized_test"].includes(key)) return;
+      clone[key] = cloneForGradeFive(value[key]);
+    });
+
+    clone.grade = 5;
+
+    ["id", "key", "value", "slug", "code"].forEach((key) => {
+      if (key in clone) clone[key] = gradeFiveValue(clone[key]);
+    });
+
+    ["label", "name", "title", "heading", "displayName"].forEach((key) => {
+      if (key in clone) clone[key] = String(clone[key]).replace(gradeFourText, "Grade 5");
+    });
+
+    ["available", "enabled"].forEach((key) => {
+      if (key in clone) clone[key] = true;
+    });
+
+    ["disabled", "locked", "isLocked", "comingSoon"].forEach((key) => {
+      if (key in clone) clone[key] = false;
+    });
+
+    ["status", "state", "availability"].forEach((key) => {
+      if (key in clone && typeof clone[key] === "string") clone[key] = "available";
+    });
+
+    ["badge", "tag", "pill", "statusLabel"].forEach((key) => {
+      if (key in clone && typeof clone[key] === "string") clone[key] = "Ready";
+    });
+
+    return clone;
+  }
+
+  function looksLikeGradeFourOption(value) {
+    if (!value || typeof value !== "object" || Array.isArray(value)) return false;
+    const identityText = [value.grade, value.id, value.key, value.value, value.label, value.name, value.title, value.heading, value.displayName]
+      .filter((part) => part !== undefined && part !== null)
+      .join(" ");
+
+    return Number(value.grade) === 4 || gradeFourText.test(identityText);
+  }
+
+  function looksLikeGradeFiveOption(value) {
+    if (!value || typeof value !== "object" || Array.isArray(value)) return false;
+    const identityText = [value.grade, value.id, value.key, value.value, value.label, value.name, value.title, value.heading, value.displayName]
+      .filter((part) => part !== undefined && part !== null)
+      .join(" ");
+
+    return Number(value.grade) === 5 || gradeFiveText.test(identityText);
+  }
+
+  function addGradeFiveContentOption(value, depth) {
+    if (!value || typeof value !== "object" || depth > 5) return;
+    if (["selections", "questions", "assessment_levels", "standardized_test"].some((key) => key in value)) return;
+
+    if (Array.isArray(value)) {
+      if (value.length > 0 && value.length < 50) {
+        const gradeFourOption = value.find(looksLikeGradeFourOption);
+        const hasGradeFiveOption = value.some(looksLikeGradeFiveOption);
+
+        if (gradeFourOption && !hasGradeFiveOption) {
+          value.push(cloneForGradeFive(gradeFourOption));
+        }
+      }
+
+      value.forEach((item) => addGradeFiveContentOption(item, depth + 1));
+      return;
+    }
+
+    Object.keys(value).forEach((key) => addGradeFiveContentOption(value[key], depth + 1));
   }
 
   function copyWorkingGradeAttributes(target) {
