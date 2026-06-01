@@ -33,9 +33,17 @@
       <main id="appRoot"></main>
     </div>
 
-    <script src="data/content.js?v=passagepath"></script>
+       <script src="data/content.js?v=passagepath"></script>
     <script src="data/selections.js?v=unit1"></script>
     <script src="data/unit2-selections.js?v=unit2"></script>
     <script src="data/unit3-selections.js?v=unit3"></script>
     <script src="data/unit4-selections.js?v=unit4"></script>
-    <script src="data/unit5-se
+    <script src="data/unit5-selections.js?v=unit5"></script>
+    <script src="app.js?v=unit1"></script>
+    <script>
+      if ("serviceWorker" in navigator) {
+        navigator.serviceWorker.register("sw.js").catch(() => {});
+      }
+    </script>
+  </body>
+</html>
