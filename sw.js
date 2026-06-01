@@ -1,4 +1,4 @@
-const CACHE_NAME = "passage-path-v9";
+const CACHE_NAME = "passage-path-v10";
 const APP_SHELL = [
   "./",
   "./index.html",
@@ -10,6 +10,8 @@ const APP_SHELL = [
   "./data/unit3-selections.js?v=unit3",
   "./data/unit4-selections.js?v=unit4",
   "./data/unit5-selections.js?v=unit5",
+  "./data/grade5-unit1-selections.js?v=g5u1",
+  "./data/selection-unit-labels.js?v=unit-labels",
   "./manifest.webmanifest",
   "./assets/icons/icon-192.png",
   "./assets/icons/icon-512.png",
