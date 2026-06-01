@@ -6,7 +6,7 @@
   const progressKey = "authorsPurposePrototypeProgress";
   const selectionProgressKey = "passagePathSelectionProgress";
   const unlockKey = "authorsPurposePrototypePremiumUnlocked";
-  const liveGrades = [3, 4];
+  const liveGrades = [3, 4, 5];
   const defaultGrade = 4;
 
   const appRoot = document.getElementById("appRoot");
@@ -314,7 +314,7 @@
   function renderGradeButton(grade) {
     const active = grade === state.grade ? " active" : "";
     const disabled = liveGrades.includes(grade) ? "" : " disabled";
-    const label = grade === 3 ? "Skills" : grade === 4 ? "Live" : "Soon";
+    const label = grade === 3 ? "Skills" : liveGrades.includes(grade) ? "Live" : "Soon";
     return `
       <button class="grade-button${active}" type="button" data-action="grade" data-grade="${grade}"${disabled}>
         <strong>G${grade}</strong>
