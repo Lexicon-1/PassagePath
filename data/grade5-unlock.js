@@ -3,7 +3,10 @@
   window.__passagePathGrade5UnlockApplied = true;
 
   const gradeFiveText = /\b(?:g\s*5|grade\s*5|5th\s*grade)\b/i;
+  const gradeFourText = /\b(?:g\s*4|grade\s*4|4th\s*grade)\b/i;
   const lockedText = /\b(?:coming\s+soon|soon|locked|unavailable)\b/i;
+  const gradeControlSelector =
+    "button, [role='button'], a, [data-grade], [data-action], [class*='grade'], [class*='card'], [class*='tile'], .choice-card, .track-card";
   const patchedObjects = new WeakSet();
 
   function textOf(node) {
@@ -66,18 +69,60 @@
     });
   }
 
+  function getGradeFourReference() {
+    const controls = Array.from(document.querySelectorAll(gradeControlSelector));
+
+    return controls
+      .filter((control) => {
+        const label = textOf(control);
+        return gradeFourText.test(label) && !lockedText.test(label);
+      })
+      .sort((a, b) => {
+        const aScore = (a.hasAttribute("data-action") ? 2 : 0) + (a.hasAttribute("data-grade") ? 1 : 0);
+        const bScore = (b.hasAttribute("data-action") ? 2 : 0) + (b.hasAttribute("data-grade") ? 1 : 0);
+        return bScore - aScore;
+      })[0];
+  }
+
+  function gradeFiveValue(value) {
+    if (!value) return value;
+
+    return String(value)
+      .replace(/\b4\b/g, "5")
+      .replace(/\bgrade[-_\s]*4\b/gi, "grade5")
+      .replace(/\bg[-_\s]*4\b/gi, "g5")
+      .replace(/\bfour\b/gi, "five");
+  }
+
+  function copyWorkingGradeAttributes(target) {
+    const reference = getGradeFourReference();
+    if (!reference || reference === target) return;
+
+    Array.from(reference.attributes || []).forEach((attribute) => {
+      if (!attribute.name.startsWith("data-")) return;
+      target.setAttribute(attribute.name, gradeFiveValue(attribute.value));
+    });
+
+    if (reference.hasAttribute("value")) {
+      target.setAttribute("value", gradeFiveValue(reference.getAttribute("value")));
+    }
+
+    target.setAttribute("data-grade", "5");
+    target.setAttribute("data-value", "5");
+  }
+
   function unlockControl(control) {
     if (!control || !gradeFiveText.test(textOf(control))) return;
 
-    const target =
-      control.closest("button, [role='button'], a, [data-grade], [data-action], .grade-card, .grade-tile, .choice-card, .track-card") ||
-      control;
+    const target = control.closest(gradeControlSelector) || control;
 
     if ("disabled" in target) target.disabled = false;
     target.removeAttribute("disabled");
     target.removeAttribute("aria-disabled");
+    copyWorkingGradeAttributes(target);
     target.setAttribute("data-grade", "5");
-    if (!target.getAttribute("data-action")) target.setAttribute("data-action", "grade");
+    target.setAttribute("data-value", "5");
+    if (!target.getAttribute("data-action")) target.setAttribute("data-action", "select-grade");
 
     ["disabled", "is-disabled", "locked", "is-locked", "soon", "coming-soon", "unavailable"].forEach((className) => {
       target.classList.remove(className);
@@ -94,7 +139,7 @@
 
   function unlockGradeFiveControls() {
     document
-      .querySelectorAll("button, [role='button'], a, [data-grade], [data-action], .grade-card, .grade-tile, .choice-card, .track-card, .card")
+      .querySelectorAll(gradeControlSelector)
       .forEach((control) => {
         if (gradeFiveText.test(textOf(control))) unlockControl(control);
       });
@@ -109,7 +154,7 @@
     "click",
     (event) => {
       const control = event.target.closest(
-        "button, [role='button'], a, [data-grade], [data-action], .grade-card, .grade-tile, .choice-card, .track-card, .card"
+        gradeControlSelector
       );
       if (control && gradeFiveText.test(textOf(control))) unlockControl(control);
     },
